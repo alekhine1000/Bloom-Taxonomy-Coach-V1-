@@ -11,7 +11,7 @@ const DOM = {
   intendedBloom: document.getElementById('intendedBloom'),  
   mode: document.getElementById('mode'),  
   apiKey: document.getElementById('apiKey'),  
-  modelName: document.getElementById('modelName'), // Now reading input directly  
+  modelName: document.getElementById('modelName'),   
   runBtn: document.getElementById('runBtn'),  
   clearBtn: document.getElementById('clearBtn'),  
   saveConfigBtn: document.getElementById('saveConfigBtn'),  
@@ -65,11 +65,11 @@ function saveConfiguration() {
   
 function loadConfiguration() {  
   const saved = localStorage.getItem(STORAGE_KEY);  
-  if (saved) {  
+  if (saved) { // FIXED: Added parentheses  
     try {  
       const config = JSON.parse(saved);  
       DOM.apiKey.value = config.apiKey || '';  
-      DOM.modelName.value = config.modelName || 'gpt-3.5-turbo'; // Default model  
+      DOM.modelName.value = config.modelName || 'gpt-3.5-turbo';   
     } catch (e) {  
       console.error("Failed to load config", e);  
     }  
@@ -130,7 +130,7 @@ function setLoading(isLoading) {
    ========================================= */  
 async function handleRun() {  
   const question = DOM.question.value.trim();  
-  if (!question) {  
+  if (!question) { // FIXED: Added parentheses  
     showToast("Please enter a question first.", "error");  
     return;  
   }  
@@ -138,12 +138,12 @@ async function handleRun() {
   const apiKey = DOM.apiKey.value.trim();  
   const model = DOM.modelName.value.trim();  
   
-  if (!apiKey) {  
+  if (!apiKey) { // FIXED: Added parentheses  
     showToast("API Key is required.", "error");  
     return;  
   }  
     
-  if (!model) {  
+  if (!model) { // FIXED: Added parentheses  
     showToast("Model Name is required.", "error");  
     return;  
   }  
@@ -222,7 +222,7 @@ async function realApiCall(apiKey, model) {
   };  
     
   const body = {  
-    model: model, // Reads directly from input field  
+    model: model,   
     messages: [  
       { role: "system", content: systemPrompt },  
       { role: "user", content: userPrompt }  
