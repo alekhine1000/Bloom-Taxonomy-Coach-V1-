@@ -3,17 +3,13 @@
 <head>  
   <meta charset="utf-8" />  
   <meta name="viewport" content="width=device-width,initial-scale=1" />  
-  <!-- TWEAK 1: Updated Title -->  
   <title>Bloom Coach (V1)</title>  
-  <!-- Link to external CSS -->  
   <link rel="stylesheet" href="styles.css" />  
 </head>  
 <body>  
   <header class="header">  
     <div class="container">  
-      <!-- TWEAK 2: Updated Header Text -->  
       <h1>🧠 Bloom Coach (V1)</h1>  
-      <!-- TWEAK 3: Updated Subtitle (Removed "Raise") -->  
       <p class="subtitle">Diagnose → Refine</p>  
     </div>  
   </header>  
@@ -48,34 +44,16 @@
     
       <div class="row">  
         <div class="col">  
-          <label class="label" for="llmProvider">LLM Provider</label>  
-          <select id="llmProvider" class="select">  
-            <option value="openai">OpenAI Compatible</option>  
-            <option value="anthropic">Anthropic Compatible</option>  
-            <option value="vertex">Google VertexAI Compatible</option>  
-          </select>  
-        </div>  
-    
-        <div class="col">  
           <label class="label" for="apiKey">API Key</label>  
-          <input id="apiKey" class="input" type="password" placeholder="Your Zenmux API key" />  
-          <div class="hint">Your API key is stored locally and never sent to third parties.</div>  
+          <input id="apiKey" class="input" type="password" placeholder="Your API Key" />  
+          <div class="hint">Your API key is stored locally.</div>  
         </div>  
-      </div>  
     
-      <!-- MODEL NAME SELECTION -->  
-      <div class="row">  
+        <!-- CHANGED: Removed Provider, changed Model to simple Input -->  
         <div class="col">  
           <label class="label" for="modelName">Model Name</label>  
-          <select id="modelName" class="select">  
-            <!-- Populated by JS -->  
-          </select>  
-        </div>  
-            
-        <!-- Only shows if "Custom" is selected -->  
-        <div id="customModelDiv" class="col" style="display:none;">  
-          <label class="label" for="customModelInput">Custom Model Name</label>  
-          <input id="customModelInput" class="input" type="text" placeholder="e.g. gpt-4-turbo" />  
+          <input id="modelName" class="input" type="text" placeholder="e.g. gpt-3.5-turbo" />  
+          <div class="hint">Type any model name supported by your API provider.</div>  
         </div>  
       </div>  
     
@@ -131,15 +109,12 @@
     
   <footer class="footer">  
     <div class="container">  
-      <!-- TWEAK 4: Updated Footer (Removed "Raise" reference) -->  
       <span class="muted">V1: Focus on clarity and accuracy.</span>  
     </div>  
   </footer>  
     
-  <!-- Toast Container -->  
   <div id="toast-container"></div>  
   
-  <!-- Link to external JavaScript -->  
   <script src="app.js"></script>  
 </body>  
 </html>  
