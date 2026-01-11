@@ -1,41 +1,17 @@
 /* =========================================  
    CONFIGURATION & STATE  
    ========================================= */  
-// SINGLE URL used for ALL providers (OpenAI, Vertex, Anthropic) as per your snippet  
 const API_URL = 'https://zenmux.ai/api/v1/chat/completions';  
 const STORAGE_KEY = 'bloomCoachConfig';  
   
-// All models treated as OpenAI-compatible payloads  
-const MODEL_LISTS = {  
-  openai: [  
-    { val: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo (Recommended)' },  
-    { val: 'gpt-4o', label: 'GPT-4o' },  
-    { val: 'gpt-4o-mini', label: 'GPT-4o-mini' },  
-    { val: 'deepseek-chat', label: 'DeepSeek Chat' },  
-    { val: 'custom', label: 'Custom Model Name...' }  
-  ],  
-  anthropic: [  
-    { val: 'claude-3-haiku', label: 'Claude 3 Haiku (Recommended)' },  
-    { val: 'claude-3-5-sonnet', label: 'Claude 3.5 Sonnet' },  
-    { val: 'claude-3-opus', label: 'Claude 3 Opus' },  
-    { val: 'custom', label: 'Custom Model Name...' }  
-  ],  
-  vertex: [  
-    { val: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },  
-    { val: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },  
-    { val: 'custom', label: 'Custom Model Name...' }  
-  ]  
-};  
+// Removed MODEL_LISTS because we use direct input now  
   
 const DOM = {  
   question: document.getElementById('question'),  
   intendedBloom: document.getElementById('intendedBloom'),  
   mode: document.getElementById('mode'),  
-  llmProvider: document.getElementById('llmProvider'),  
   apiKey: document.getElementById('apiKey'),  
-  modelName: document.getElementById('modelName'),  
-  customModelDiv: document.getElementById('customModelDiv'),  
-  customModelInput: document.getElementById('customModelInput'),  
+  modelName: document.getElementById('modelName'), // Now reading input directly  
   runBtn: document.getElementById('runBtn'),  
   clearBtn: document.getElementById('clearBtn'),  
   saveConfigBtn: document.getElementById('saveConfigBtn'),  
@@ -55,22 +31,8 @@ const DOM = {
    INITIALIZATION & EVENT LISTENERS  
    ========================================= */  
 document.addEventListener('DOMContentLoaded', () => {  
-  localStorage.removeItem(STORAGE_KEY); // Reset config  
+  localStorage.removeItem(STORAGE_KEY); // Reset for clean state  
   loadConfiguration();  
-  updateModelDropdown(DOM.llmProvider.value);   
-});  
-  
-DOM.llmProvider.addEventListener('change', () => {  
-  updateModelDropdown(DOM.llmProvider.value);  
-});  
-  
-DOM.modelName.addEventListener('change', () => {  
-  if (DOM.modelName.value === 'custom') {  
-    DOM.customModelDiv.style.display = 'block';  
-    DOM.customModelInput.focus();  
-  } else {  
-    DOM.customModelDiv.style.display = 'none';  
-  }  
 });  
   
 DOM.runBtn.addEventListener('click', handleRun);  
@@ -92,26 +54,10 @@ DOM.recheckBtn.addEventListener('click', () => {
 /* =========================================  
    UI LOGIC  
    ========================================= */  
-function updateModelDropdown(provider) {  
-  const list = MODEL_LISTS[provider];  
-  if (!list) return;  
-  
-  DOM.modelName.innerHTML = '';  
-  list.forEach(m => {  
-    const option = document.createElement('option');  
-    option.value = m.val;  
-    option.textContent = m.label;  
-    DOM.modelName.appendChild(option);  
-  });  
-  DOM.customModelDiv.style.display = 'none';  
-}  
-  
 function saveConfiguration() {  
   const config = {  
     apiKey: DOM.apiKey.value,  
-    llmProvider: DOM.llmProvider.value,  
-    modelName: DOM.modelName.value,  
-    customModelInput: DOM.customModelInput.value  
+    modelName: DOM.modelName.value  
   };  
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config));  
   showToast('Configuration saved locally!');  
@@ -123,18 +69,7 @@ function loadConfiguration() {
     try {  
       const config = JSON.parse(saved);  
       DOM.apiKey.value = config.apiKey || '';  
-      DOM.llmProvider.value = config.llmProvider || 'openai';  
-        
-      updateModelDropdown(DOM.llmProvider.value);  
-        
-      const modelExists = Array.from(DOM.modelName.options).some(o => o.value === config.modelName);  
-      DOM.modelName.value = modelExists ? config.modelName : MODEL_LISTS[DOM.llmProvider.value][0].val;  
-  
-      DOM.customModelInput.value = config.customModelInput || '';  
-  
-      if (DOM.modelName.value === 'custom') {  
-        DOM.customModelDiv.style.display = 'block';  
-      }  
+      DOM.modelName.value = config.modelName || 'gpt-3.5-turbo'; // Default model  
     } catch (e) {  
       console.error("Failed to load config", e);  
     }  
@@ -200,18 +135,23 @@ async function handleRun() {
     return;  
   }  
   
-  const provider = DOM.llmProvider.value;  
   const apiKey = DOM.apiKey.value.trim();  
+  const model = DOM.modelName.value.trim();  
   
   if (!apiKey) {  
     showToast("API Key is required.", "error");  
+    return;  
+  }  
+    
+  if (!model) {  
+    showToast("Model Name is required.", "error");  
     return;  
   }  
   
   setLoading(true);  
   
   try {  
-    const result = await realApiCall(provider, apiKey);  
+    const result = await realApiCall(apiKey, model);  
     renderOutput(result);  
     DOM.status.className = 'status success';  
     DOM.status.textContent = 'Analysis complete.';  
@@ -232,30 +172,35 @@ async function handleRun() {
 /* =========================================  
    API HANDLING  
    ========================================= */  
-function getEffectiveModel() {  
-  const selected = DOM.modelName.value;  
-  if (selected === 'custom') {  
-    const customVal = DOM.customModelInput.value.trim();  
-    if (!customVal) return MODEL_LISTS[DOM.llmProvider.value][0].val;  
-    return customVal;  
-  }  
-  return selected;  
-}  
-  
 function buildPromptData() {  
   const question = DOM.question.value.trim();  
   const intended = DOM.intendedBloom.value;  
   const mode = DOM.mode.value;  
   
   const systemPrompt = `You are an expert exam validator and pedagogical coach specializing in Bloom's Taxonomy.   
-Your goal is to analyze exam questions based on user's mode.  
+Analyze the user's exam question.  
+  
+CRITICAL RULES:  
+1. Bloom Level: Determine level based on COGNITIVE VERB and task, NOT on grammar.  
+   - "Calculate", "Find", "Determine" = Apply.  
+   - "Define", "List", "Identify" = Remember.  
+   - "Explain", "Summarize" = Understand.  
+   - "Analyze", "Compare", "Differentiate" = Analyze.  
+   - "Evaluate", "Judge", "Critique" = Evaluate.  
+   - "Design", "Create", "Construct" = Create.  
+2. Typos and poor grammar do NOT lower Bloom level.  
+  
+MODES (V1):  
+- Diagnose: Identify Bloom Level and list issues (typos, ambiguity). Fix errors only. Do NOT change Bloom Level.  
+- Refine: Improve clarity, phrasing, and professional tone. Keep SAME Bloom Level.  
+  
 Return ONLY a raw JSON object (no markdown formatting) with this exact schema:  
 {  
-  "level": "Detected Bloom Level (e.g., Analyze)",  
+  "level": "Detected Bloom Level (e.g., Apply)",  
   "why": "Brief explanation of why it fits this level.",  
-  "flags": ["List of strings identifying issues like ambiguity, bias, or complexity mismatch"],  
-  "redraft": "An improved version of the question based on the mode",  
-  "beforeAfter": "Short summary of the change (e.g., 'Moved from Remember to Understand')"  
+  "flags": ["List of strings identifying issues like typos, ambiguity"],  
+  "redraft": "An improved version of the question based on the specific mode.",  
+  "beforeAfter": "Short summary (e.g., 'Diagnosed as Apply - Fixed typos' or 'Refined phrasing - Same level')."  
 }`;  
   
   let userPrompt = `Question: "${question}"\nMode: ${mode}`;  
@@ -266,22 +211,18 @@ Return ONLY a raw JSON object (no markdown formatting) with this exact schema:
   return { systemPrompt, userPrompt };  
 }  
   
-async function realApiCall(provider, apiKey) {  
+async function realApiCall(apiKey, model) {  
   const { systemPrompt, userPrompt } = buildPromptData();  
-  const model = getEffectiveModel();  
   
-  // ALL requests go to the single URL provided in the snippet  
   const url = API_URL;   
     
-  // Use standard OpenAI headers for all providers (Zenmux handles the translation)  
   const headers = {  
     'Content-Type': 'application/json',  
     'Authorization': `Bearer ${apiKey}`  
   };  
     
-  // Standard OpenAI payload structure for all providers  
   const body = {  
-    model: model,  
+    model: model, // Reads directly from input field  
     messages: [  
       { role: "system", content: systemPrompt },  
       { role: "user", content: userPrompt }  
@@ -289,8 +230,7 @@ async function realApiCall(provider, apiKey) {
     temperature: 0.3  
   };  
   
-  // Debug display  
-  DOM.debugPrompt.textContent = `URL: ${url}\nModel: ${model}\nProvider: ${provider}`;  
+  DOM.debugPrompt.textContent = `URL: ${url}\nModel: ${model}`;  
   DOM.debugRaw.textContent = `[SENDING PAYLOAD]:\n${JSON.stringify(body, null, 2)}`;  
   
   const response = await fetch(url, {  
@@ -307,10 +247,7 @@ async function realApiCall(provider, apiKey) {
   const data = await response.json();  
   DOM.debugRaw.textContent += `\n\n[RECEIVED RESPONSE]:\n${JSON.stringify(data, null, 2)}`;  
   
-  // Zenmux returns standard OpenAI format for all providers  
   const contentString = data.choices[0].message.content;  
-  
-  // Clean markdown code blocks if the LLM ignored the "no markdown" instruction  
   const cleanString = contentString.replace(/```json/g, '').replace(/```/g, '').trim();  
   
   return JSON.parse(cleanString);  
