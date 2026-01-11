@@ -1,0 +1,145 @@
+<!doctype html>  
+<html lang="en">  
+<head>  
+  <meta charset="utf-8" />  
+  <meta name="viewport" content="width=device-width,initial-scale=1" />  
+  <!-- TWEAK 1: Updated Title -->  
+  <title>Bloom Coach (V1)</title>  
+  <!-- Link to external CSS -->  
+  <link rel="stylesheet" href="styles.css" />  
+</head>  
+<body>  
+  <header class="header">  
+    <div class="container">  
+      <!-- TWEAK 2: Updated Header Text -->  
+      <h1>🧠 Bloom Coach (V1)</h1>  
+      <!-- TWEAK 3: Updated Subtitle (Removed "Raise") -->  
+      <p class="subtitle">Diagnose → Refine</p>  
+    </div>  
+  </header>  
+    
+  <main class="container">  
+    <section class="card">  
+      <label class="label" for="question">Paste your draft exam question</label>  
+      <textarea id="question" class="textarea" rows="6" placeholder="Example: Calculate the standard deviation of the following dataset..."></textarea>  
+    
+      <div class="row">  
+        <div class="col">  
+          <label class="label" for="intendedBloom">Intended Bloom level (optional)</label>  
+          <select id="intendedBloom" class="select">  
+            <option value="">(Not specified)</option>  
+            <option value="Remember">Remember</option>  
+            <option value="Understand">Understand</option>  
+            <option value="Apply">Apply</option>  
+            <option value="Analyze">Analyze</option>  
+            <option value="Evaluate">Evaluate</option>  
+            <option value="Create">Create</option>  
+          </select>  
+        </div>  
+    
+        <div class="col">  
+          <label class="label" for="mode">Mode</label>  
+          <select id="mode" class="select">  
+            <option value="diagnose">Diagnose</option>  
+            <option value="refine">Refine (same level)</option>  
+          </select>  
+        </div>  
+      </div>  
+    
+      <div class="row">  
+        <div class="col">  
+          <label class="label" for="llmProvider">LLM Provider</label>  
+          <select id="llmProvider" class="select">  
+            <option value="openai">OpenAI Compatible</option>  
+            <option value="anthropic">Anthropic Compatible</option>  
+            <option value="vertex">Google VertexAI Compatible</option>  
+          </select>  
+        </div>  
+    
+        <div class="col">  
+          <label class="label" for="apiKey">API Key</label>  
+          <input id="apiKey" class="input" type="password" placeholder="Your Zenmux API key" />  
+          <div class="hint">Your API key is stored locally and never sent to third parties.</div>  
+        </div>  
+      </div>  
+    
+      <!-- MODEL NAME SELECTION -->  
+      <div class="row">  
+        <div class="col">  
+          <label class="label" for="modelName">Model Name</label>  
+          <select id="modelName" class="select">  
+            <!-- Populated by JS -->  
+          </select>  
+        </div>  
+            
+        <!-- Only shows if "Custom" is selected -->  
+        <div id="customModelDiv" class="col" style="display:none;">  
+          <label class="label" for="customModelInput">Custom Model Name</label>  
+          <input id="customModelInput" class="input" type="text" placeholder="e.g. gpt-4-turbo" />  
+        </div>  
+      </div>  
+    
+      <div class="actions">  
+        <button id="runBtn" class="btn primary">Run Analysis</button>  
+        <button id="clearBtn" class="btn">Clear Form</button>  
+        <button id="saveConfigBtn" class="btn">Save Configuration</button>  
+      </div>  
+    </section>  
+    
+    <section class="card">  
+      <h2>Output</h2>  
+    
+      <div id="status" class="status hidden"></div>  
+    
+      <div class="grid">  
+        <div class="panel">  
+          <h3>Bloom level</h3>  
+          <div id="level" class="big">—</div>  
+          <div id="beforeAfter" class="small muted"></div>  
+        </div>  
+    
+        <div class="panel">  
+          <h3>Why (short)</h3>  
+          <pre id="why" class="pre">—</pre>  
+        </div>  
+    
+        <div class="panel">  
+          <h3>Flags / Issues</h3>  
+          <pre id="flags" class="pre">—</pre>  
+        </div>  
+    
+        <div class="panel">  
+          <h3>Suggested redraft</h3>  
+          <pre id="redraft" class="pre">—</pre>  
+    
+          <div class="actions tight">  
+            <button id="useRedraftBtn" class="btn small" disabled>Use redraft as new draft</button>  
+            <button id="recheckBtn" class="btn small" disabled>Re-check redraft</button>  
+          </div>  
+        </div>  
+      </div>  
+    
+      <details class="details">  
+        <summary>Debug (prompt + raw response)</summary>  
+        <h4>Prompt sent</h4>  
+        <pre id="debugPrompt" class="pre small">—</pre>  
+        <h4>Raw response</h4>  
+        <pre id="debugRaw" class="pre small">—</pre>  
+      </details>  
+    </section>  
+  </main>  
+    
+  <footer class="footer">  
+    <div class="container">  
+      <!-- TWEAK 4: Updated Footer (Removed "Raise" reference) -->  
+      <span class="muted">V1: Focus on clarity and accuracy.</span>  
+    </div>  
+  </footer>  
+    
+  <!-- Toast Container -->  
+  <div id="toast-container"></div>  
+  
+  <!-- Link to external JavaScript -->  
+  <script src="app.js"></script>  
+</body>  
+</html>  
