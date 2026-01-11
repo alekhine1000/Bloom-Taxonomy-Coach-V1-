@@ -4,8 +4,9 @@
 const API_URL = 'https://zenmux.ai/api/v1/chat/completions';  
 const STORAGE_KEY = 'bloomCoachConfig';  
   
-// Removed MODEL_LISTS because we use direct input now  
+console.log("App Loaded. DOM Elements attaching...");  
   
+// DOM Elements  
 const DOM = {  
   question: document.getElementById('question'),  
   intendedBloom: document.getElementById('intendedBloom'),  
@@ -27,15 +28,22 @@ const DOM = {
   recheckBtn: document.getElementById('recheckBtn')  
 };  
   
+console.log("DOM Elements attached successfully.");  
+  
 /* =========================================  
    INITIALIZATION & EVENT LISTENERS  
    ========================================= */  
 document.addEventListener('DOMContentLoaded', () => {  
+  console.log("DOM Content Loaded. Initializing app...");  
   localStorage.removeItem(STORAGE_KEY); // Reset for clean state  
   loadConfiguration();  
 });  
   
-DOM.runBtn.addEventListener('click', handleRun);  
+DOM.runBtn.addEventListener('click', () => {  
+  console.log("Run Button Clicked");  
+  handleRun();  
+});  
+  
 DOM.clearBtn.addEventListener('click', clearForm);  
 DOM.saveConfigBtn.addEventListener('click', saveConfiguration);  
   
@@ -65,7 +73,9 @@ function saveConfiguration() {
   
 function loadConfiguration() {  
   const saved = localStorage.getItem(STORAGE_KEY);  
-  if (saved) { // FIXED: Added parentheses  
+  console.log("Loading config...", saved);  
+    
+  if (saved) { // FIXED: Added Parentheses  
     try {  
       const config = JSON.parse(saved);  
       DOM.apiKey.value = config.apiKey || '';  
@@ -112,6 +122,7 @@ function showToast(message, type = 'info') {
 }  
   
 function setLoading(isLoading) {  
+  console.log("Setting loading to:", isLoading);  
   if (isLoading) {  
     DOM.runBtn.disabled = true;  
     DOM.runBtn.innerHTML = '<span class="spinner"></span> Processing...';  
@@ -129,8 +140,11 @@ function setLoading(isLoading) {
    CORE APPLICATION LOGIC  
    ========================================= */  
 async function handleRun() {  
+  console.log("handleRun started");  
+    
   const question = DOM.question.value.trim();  
-  if (!question) { // FIXED: Added parentheses  
+  if (!question) { // FIXED: Added Parentheses  
+    console.log("No question entered");  
     showToast("Please enter a question first.", "error");  
     return;  
   }  
@@ -138,19 +152,22 @@ async function handleRun() {
   const apiKey = DOM.apiKey.value.trim();  
   const model = DOM.modelName.value.trim();  
   
-  if (!apiKey) { // FIXED: Added parentheses  
+  if (!apiKey) { // FIXED: Added Parentheses  
+    console.log("No API Key");  
     showToast("API Key is required.", "error");  
     return;  
   }  
     
-  if (!model) { // FIXED: Added parentheses  
-    showToast("Model Name is required.", "error");  
+  if (!model) { // FIXED: Added Parentheses  
+    console.log("No Model Name");  
+    showToast("Model Name is required (e.g. gpt-3.5-turbo).", "error");  
     return;  
   }  
   
   setLoading(true);  
   
   try {  
+    console.log("Sending API call...");  
     const result = await realApiCall(apiKey, model);  
     renderOutput(result);  
     DOM.status.className = 'status success';  
