@@ -317,12 +317,24 @@ async function realApiCall(provider, apiKey) {
 
   const contentString = data.choices[0].message.content;
 
-  const cleanString = contentString
-    .replace(/```json/g, '')
+  // 🔧 Robust JSON cleanup + extraction
+  let cleanString = contentString
+    .replace(/```json/gi, '')
     .replace(/```/g, '')
     .trim();
 
-  return JSON.parse(cleanString);
+  const firstBrace = cleanString.indexOf('{');
+  const lastBrace = cleanString.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1) {
+    cleanString = cleanString.slice(firstBrace, lastBrace + 1);
+  }
+
+  try {
+    return JSON.parse(cleanString);
+  } catch (e) {
+    console.error("Failed to parse JSON from model:\n", cleanString);
+    throw new Error("LLM returned invalid JSON. Check debug output.");
+  }
 }
 
 function renderOutput(data) {
@@ -334,3 +346,4 @@ function renderOutput(data) {
     : (data.flags || 'None');
   DOM.redraft.textContent = data.redraft || 'No redraft available.';
 }
+
