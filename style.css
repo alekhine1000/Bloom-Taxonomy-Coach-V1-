@@ -1,4 +1,230 @@
 /* CSS VARIABLES & RESET */  
+/* ==============
+   GLOBAL RESET
+   ============== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #f6f8fb;
+  color: #222;
+  height: 100%;
+  line-height: 1.5;
+}
+
+/* Add air around everything */
+body {
+  padding: 2rem 1rem;
+}
+
+/* ==============
+   LAYOUT
+   ============== */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Cards */
+.card {
+  background: #ffffff;
+  padding: 1.75rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Panels in the result grid */
+.grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.panel {
+  background: #fafbfe;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* ==============
+   HEADER + FOOTER
+   ============== */
+.header h1 {
+  margin-bottom: 0.25rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #555;
+}
+
+.footer {
+  margin-top: 1rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* ==============
+   FORMS
+   ============== */
+.label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.textarea,
+.input,
+.select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d0d7e2;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+  margin-bottom: 1rem;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.col {
+  flex: 1;
+}
+
+/* ==============
+   BUTTONS
+   ============== */
+.btn {
+  background: #e5e7eb;
+  border: none;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  background: #d4d6da;
+}
+
+.primary {
+  background: #4f8dfd;
+  color: white;
+}
+
+.primary:hover {
+  background: #3c75e4;
+}
+
+.btn.small {
+  padding: 0.45rem 0.65rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.actions.tight {
+  margin-top: 0.75rem;
+}
+
+/* ==============
+   STATUS + TOAST
+   ============== */
+.status {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  display: block;
+}
+
+.status.hidden {
+  display: none;
+}
+
+.status.loading {
+  background: #fff7e0;
+  color: #805000;
+}
+
+.status.success {
+  background: #e6f8ea;
+  color: #2d6a30;
+}
+
+.status.error {
+  background: #fdecec;
+  color: #a7131b;
+}
+
+/* Toasts */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.toast {
+  background: #4f8dfd;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  transition: opacity 0.3s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+/* ==============
+   OUTPUT
+   ============== */
+.big {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.small {
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: #666;
+}
+
+.pre {
+  background: #f3f4f6;
+  border-radius: 6px;
+  padding: 0.6rem;
+  white-space: pre-wrap;
+  font-family: Consolas, monospace;
+  border: 1px solid #e5e7eb;
+}
+
 :root {  
   --primary: #2563eb;  
   --primary-hover: #1d4ed8;  
